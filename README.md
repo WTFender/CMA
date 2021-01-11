@@ -5,7 +5,7 @@ Simple Python wrapper for the Cleveland Museum of Art API.
 ### Usage
 
 #### Retrieve Artwork by ID or Accession Number
-```bash
+```json
 cma artwork --id 123985
 {
     "id": 123985,
@@ -28,7 +28,7 @@ cma artwork --id 1944.485
 ```
 
 #### ASCII Preview
-```bash
+```text
 cma artwork --id 1944.485 --preview --pretty
 
 Title: The Wade Cup with Animated Script
