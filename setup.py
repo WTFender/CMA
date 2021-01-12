@@ -9,7 +9,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setuptools.setup(
 	name='ClevelandMuseumArt',
-	version='0.1.0',
+	version='1.0.0',
 	author='Michael McIntyre',
 	author_email='wtfender.cs@gmail.com',
 	description='Python wrapper for Cleveland Museum of Art Open Access API',

@@ -12,6 +12,11 @@ List artwork with filters
 Get artwork by ID  
 `cma artwork get --id 1944.485 --preview`
 ```
+Title: The Wade Cup with Animated Script
+Type: Metalwork
+Culture: Iran, Seljuk Period, 13th Century
+Link: https://openaccess-cdn.clevelandart.org/1944.485/1944.485_web.jpg
+Preview:
 ################################################################################
 ###############################*******************##############################
 #########################*********************************######################
