@@ -1,5 +1,6 @@
 from CMA.api import Handler
 import argparse
+import random
 import json
 
 
@@ -25,7 +26,9 @@ for sub in [sub_artwork, sub_creator, sub_exhibit]:
 
 # artwork get
 sub_artwork_get = sub_artwork.add_parser('get', parents=[verbose])
-sub_artwork_get.add_argument('--id', dest='resource', type=str, help='resource ID to retrieve', required=True)
+group = sub_artwork_get.add_mutually_exclusive_group()
+group.add_argument('--random', dest='random', action='store_true', help='preview a random artwork.')
+group.add_argument('--id', dest='resource', type=str, help='resource ID to retrieve')
 sub_artwork_get.add_argument('--preview', dest='preview', action='store_true', help='generate preview')
 sub_artwork_get.add_argument('--preview_cols', dest='preview_cols', type=int, help='generate preview')
 sub_artwork_get.add_argument('--preview_scale', dest='preview_scale', type=float, help='generate preview')
@@ -128,7 +131,15 @@ def main():
     if args.command == 'artwork':
 
         if args.subcommand == 'get':
-            output = cma.get_artwork(rid=args.resource, **args.__dict__)
+
+            if args.random:
+                artworks = cma.list_artworks(**args.__dict__)
+                rids = [a['id'] for a in artworks]
+                resource = random.choice(rids)
+            else:
+                resource = args.resource
+
+            output = cma.get_artwork(rid=resource, **args.__dict__)
 
             if args.preview:
                 preview_artwork(output)

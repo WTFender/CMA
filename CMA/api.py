@@ -21,7 +21,15 @@ class Handler:
         else:
             return resp.json()['data']
 
-    def list_artworks(self, **kwargs):
+    def list_artworks(self, q=None, department=None, type=None, has_image=None,
+                        indent=None, skip=None, limit=None, artists=None, title=None,
+                        medium=None, dimensions=None, dimensions_max=None, dimensions_min=None,
+                        credit=None, catalogue_raisonne=None, provenance=None, citations=None,
+                        exhibition_history=None, created_before=None, created_after=None,
+                        created_after_age=None, created_before_age=None, cc0=None, copyrighted=None,
+                        currently_on_view=None, currently_on_loan=None, african_american_artists=None,
+                        cia_alumni_artists=None, may_show_artists=None, female_artists=None,
+                        recently_acquired=None, nazi_era_provenance=None, **kwargs):
         '''
         q	string	Any keyword or phrase that searches against title, creator, artwork description, and several other meaningful fields related to the artwork.
         department	string	Filter by department. List of valid departments in Appendix B.
@@ -57,51 +65,50 @@ class Handler:
         nazi_era_provenance	none	Filters by nazi-era provenance.
         '''
         params = {}
-        if kwargs['q']:
-            params['q'] = str(kwargs['q'])
-        if kwargs['department']:
-            params['department'] = str(kwargs['department'])
-        if kwargs['type']:
-            params['type'] = str(kwargs['type'])
-        if kwargs['has_image']:
-            params['has_image'] = int(kwargs['has_image'])
-        if kwargs['indent']:
-            params['indent'] = int(kwargs['indent'])
-        if kwargs['skip']:
-            params['skip'] = int(kwargs['skip'])
-        if kwargs['limit']:
-            params['limit'] = int(kwargs['limit'])
-        if kwargs['artists']:
-            params['artists'] = str(kwargs['artists'])
-        if kwargs['title']:
-            params['title'] = str(kwargs['title'])
-        if kwargs['medium']:
-            params['medium'] = str(kwargs['medium'])
-        if kwargs['dimensions']:
-            params['dimensions'] = str(kwargs['dimensions'])
-        if kwargs['dimensions_max']:
-            params['dimensions_max'] = str(kwargs['dimensions_max'])
-        if kwargs['dimensions_min']:
-            params['dimensions_min'] = str(kwargs['dimensions_min'])
-        if kwargs['credit']:
-            params['credit'] = str(kwargs['credit'])
-        if kwargs['catalogue_raisonne']:
-            params['catalogue_raisonne'] = str(kwargs['catalogue_raisonne'])
-        if kwargs['provenance']:
-            params['provenance'] = str(kwargs['provenance'])
-        if kwargs['citations']:
-            params['citations'] = str(kwargs['citations'])
-        if kwargs['exhibition_history']:
-            params['exhibition_history'] = str(kwargs['exhibition_history'])
-        if kwargs['created_before']:
-            params['created_before'] = int(kwargs['created_before'])
-        if kwargs['created_after']:
-            params['created_after'] = int(kwargs['created_after'])
-        if kwargs['created_after_age']:
-            params['created_after_age'] = int(kwargs['created_after_age'])
-        if kwargs['created_before_age']:
-            params['created_before_age'] = int(kwargs['created_before_age'])
-
+        if q:
+            params['q'] = str(q)
+        if department:
+            params['department'] = str(department)
+        if type:
+            params['atype'] = str(type)
+        if has_image:
+            params['has_image'] = int(has_image)
+        if indent:
+            params['indent'] = int(indent)
+        if skip:
+            params['skip'] = int(skip)
+        if limit:
+            params['limit'] = int(limit)
+        if artists:
+            params['artists'] = str(artists)
+        if title:
+            params['title'] = str(title)
+        if medium:
+            params['medium'] = str(medium)
+        if dimensions:
+            params['dimensions'] = str(dimensions)
+        if dimensions_max:
+            params['dimensions_max'] = str(dimensions_max)
+        if dimensions_min:
+            params['dimensions_min'] = str(dimensions_min)
+        if credit:
+            params['credit'] = str(credit)
+        if catalogue_raisonne:
+            params['catalogue_raisonne'] = str(catalogue_raisonne)
+        if provenance:
+            params['provenance'] = str(provenance)
+        if citations:
+            params['citations'] = str(citations)
+        if exhibition_history:
+            params['exhibition_history'] = str(exhibition_history)
+        if created_before:
+            params['created_before'] = int(created_before)
+        if created_after:
+            params['created_after'] = int(created_after)
+        if created_after_age:
+            params['created_after_age'] = int(created_after_age)
+        if created_before_age:
+            params['created_before_age'] = int(created_before_age)
         path = ''
         for k in ['cc0','copyrighted','currently_on_view','currently_on_loan',
                 'african_american_artists','cia_alumni_artists','may_show_artists',
@@ -109,9 +116,7 @@ class Handler:
             if k in kwargs:
                 if kwargs[k]:
                     path += k + '&'
-
         path = path[:-1] # remove trailing &
-
         return self._api('GET', '/artworks/?' + path, params)
 
     def get_artwork(self, rid, preview=False, **kwargs):
@@ -139,7 +144,10 @@ class Handler:
             raise Exception(img.content)
         return covertImageToAscii(img, cols, scale, moreLevels)
 
-    def list_creators(self, **kwargs):
+    def list_creators(self, name=None, biography=None, nationality=None,
+                        birth_year=None, birth_year_after=None, birth_year_before=None,
+                        death_year=None, death_year_after=None, death_year_before=None,
+                        indent=None, skip=None, limit=None, **kwargs):
         '''
         name	string	Filter by matches or partial matches to the name of any creator.
         biography	string	Filter by a keyword in creator biography.
@@ -155,37 +163,39 @@ class Handler:
         limit	integer	Limit for number of results. If no limit provided, API will return the maximum (100) number of records.
         '''
         params = {}
-        if kwargs['name']:
-            params['name'] = str(kwargs['name'])
-        if kwargs['biography']:
-            params['biography'] = str(kwargs['biography'])
-        if kwargs['nationality']:
-            params['nationality'] = str(kwargs['nationality'])
-        if kwargs['birth_year']:
-            params['birth_year'] = int(kwargs['birth_year'])
-        if kwargs['birth_year_after']:
-            params['birth_year_after'] = int(kwargs['birth_year_after'])
-        if kwargs['birth_year_before']:
-            params['birth_year_before'] = int(kwargs['birth_year_before'])
-        if kwargs['death_year']:
-            params['death_year'] = int(kwargs['death_year'])
-        if kwargs['death_year_after']:
-            params['death_year_after'] = int(kwargs['death_year_after'])
-        if kwargs['death_year_before']:
-            params['death_year_before'] = int(kwargs['death_year_before'])
-        if kwargs['indent']:
-            params['indent'] = int(kwargs['indent'])
-        if kwargs['skip']:
-            params['skip'] = int(kwargs['skip'])
-        if kwargs['limit']:
-            params['limit'] = int(kwargs['limit'])
+        if name:
+            params['name'] = str(name)
+        if biography:
+            params['biography'] = str(biography)
+        if nationality:
+            params['nationality'] = str(nationality)
+        if birth_year:
+            params['birth_year'] = int(birth_year)
+        if birth_year_after:
+            params['birth_year_after'] = int(birth_year_after)
+        if birth_year_before:
+            params['birth_year_before'] = int(birth_year_before)
+        if death_year:
+            params['death_year'] = int(death_year)
+        if death_year_after:
+            params['death_year_after'] = int(death_year_after)
+        if death_year_before:
+            params['death_year_before'] = int(death_year_before)
+        if indent:
+            params['indent'] = int(indent)
+        if skip:
+            params['skip'] = int(skip)
+        if limit:
+            params['limit'] = int(limit)
         return self._api('GET', '/creators/?', params=params)
 
-    def get_creator(self, rid):
+    def get_creator(self, rid, **kwargs):
         rid = int(rid)
         return self._api('GET', '/creators/' + str(rid), None)
 
-    def list_exhibitions(self, **kwargs):
+    def list_exhibitions(self, title=None, organizer=None, opened_after=None,
+                            opened_before=None, closed_after=None, closed_before=None,
+                            venue=None, indent=None, skip=None, limit=None, **kwargs):
         '''
         title	string	Filter by matches or partial matches to the title of an exhibition.
         organizer	string	Filter by exhibition organizer.
@@ -227,6 +237,6 @@ class Handler:
             params['limit'] = int(kwargs['limit'])
         return self._api('GET', '/exhibitions/?', params=params)
 
-    def get_exhibition(self, rid):
+    def get_exhibition(self, rid, **kwargs):
         rid = int(rid)
         return self._api('GET', '/exhibitions/' + str(rid), None)
