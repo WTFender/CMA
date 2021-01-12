@@ -1,42 +1,17 @@
 # CMA
 
-Simple Python wrapper for the Cleveland Museum of Art API.
+Python wrapper for the Cleveland Museum of Art API.
 
-### Usage
+### Install
+`pip install ClevelandMuseumArt`
 
-#### Retrieve Artwork by ID or Accession Number
-```json
-cma artwork --id 123985
-{
-    "id": 123985,
-    "accession_number": "1944.485",
-    "share_license_status": "CC0",
-    "current_location": "ArtLens Exhibition A",
-    "title": "The Wade Cup with Animated Script",
-    ...snip...
-}
+### CLI Examples
+List artwork with filters  
+`cma artwork list --female_artists --created_after 1998 --limit 10`
 
-cma artwork --id 1944.485
-{
-    "id": 123985,
-    "accession_number": "1944.485",
-    "share_license_status": "CC0",
-    "current_location": "ArtLens Exhibition A",
-    "title": "The Wade Cup with Animated Script",
-    ...snip...
-}
+Get artwork by ID  
+`cma artwork get --id 1944.485 --preview`
 ```
-
-#### ASCII Preview
-```text
-cma artwork --id 1944.485 --preview --pretty
-
-Title: The Wade Cup with Animated Script
-Type: Metalwork
-Creator:
-Culture: Iran, Seljuk Period, 13th Century
-Link: https://openaccess-cdn.clevelandart.org/1944.485/1944.485_web.jpg
-Preview:
 ################################################################################
 ###############################*******************##############################
 #########################*********************************######################
@@ -49,7 +24,6 @@ Preview:
 ***********#*****+***+*++++++==+***++==+=+==++-=+++=++=*==++****##%*************
 ***********#****+***++*+=+=++==++===+=+**++=====+=**+*++=++***+*##%*************
 ***********######***#+*+**+++==+++==+=++++=++=+=+++++++++******####*++**********
-+++++++++++**##*****+***#**++**++++*++++**+++*++=++++**+**+*+**##**++++++++++++*
 +++++++++++++***+***+******+++**+*****++++=+**++++++++******###**+++++++++++++++
 ==============+******+++**+++**++**++++*++****+=+**+++++*++****+===============+
 ===-----------==+*****++++*++++++*+++++++++++++*+++*+++++***+==------------=====
@@ -63,4 +37,25 @@ Preview:
 .............:::::::::::::::--=====++++++++=====--::::..........................
 ................................................................................
 ................................................................................
+```
+  
+### Python Examples
+```python
+from CMA.api import Handler
+
+artwork_id = 1953.424
+creator_id = 7978
+exhibit_id = 206339
+
+cma = Handler()
+
+# get artwork, creator, or exhibition by ID
+artwork = cma.get_artwork(rid=artwork_id, preview=True)
+creator = cma.get_creator(rid=creator_id)
+exhibit = cma.get_exhibition(rid=exhibit_id)
+
+# list artwork, creator, or exhibition with filters
+artworks = cma.list_artworks(limit=3, female_artists=True)
+creators = cma.list_creators(limit=3, birth_year_after=1980)
+exhibits = cma.list_exhibitions(limit=3, opened_before='2020-12-31')
 ```

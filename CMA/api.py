@@ -1,3 +1,4 @@
+from .utils import covertImageToAscii
 import requests
 import urllib
 
@@ -7,9 +8,8 @@ import urllib
 
 class Handler:
 
-    def __init__(self, baseurl='https://openaccess-api.clevelandart.org/api', key=''):
+    def __init__(self, baseurl='https://openaccess-api.clevelandart.org/api'):
         self.baseurl = baseurl
-        self.key = key # unimplemented
 
     def _api(self, method, path, params):
         if params:
@@ -21,7 +21,7 @@ class Handler:
         else:
             return resp.json()['data']
 
-    def get_artworks(self, **kwargs):
+    def list_artworks(self, **kwargs):
         '''
         q	string	Any keyword or phrase that searches against title, creator, artwork description, and several other meaningful fields related to the artwork.
         department	string	Filter by department. List of valid departments in Appendix B.
@@ -114,19 +114,23 @@ class Handler:
 
         return self._api('GET', '/artworks/?' + path, params)
 
-    def get_artwork(self, rid, preview=False):
-        rid = str(rid)
-        if '.' in rid:
+    def get_artwork(self, rid, preview=False, **kwargs):
+        if '.' in str(rid):
             rid = float(rid)
         else:
             rid = int(rid)
         resp = self._api('GET', '/artworks/' + str(rid), None)
         if preview:
-            resp['preview'] = self._get_artwork_preview(resp)
+            resp['preview'] = self._gen_artwork_preview(resp, **kwargs)
         return resp
 
-    def _get_artwork_preview(self, artwork, cols=80, scale=.43, moreLevels=False):
-        from .utils import covertImageToAscii
+    def _gen_artwork_preview(self, artwork, cols=80, scale=.43, moreLevels=False, **kwargs):
+        if kwargs['preview_cols']:
+            cols = int(kwargs['preview_cols'])
+        if kwargs['preview_scale']:
+            scale = float(kwargs['preview_scale'])
+        if kwargs['preview_levels']:
+            moreLevels = bool(kwargs['preview_levels'])
         try:
             img = requests.get(artwork['images']['web']['url'])
         except KeyError:
@@ -134,10 +138,95 @@ class Handler:
         if img.status_code != 200:
             raise Exception(img.content)
         return covertImageToAscii(img, cols, scale, moreLevels)
-        
-    def get_curators(self):
-        pass
 
-    def get_exhibitions(self):
-        pass
+    def list_creators(self, **kwargs):
+        '''
+        name	string	Filter by matches or partial matches to the name of any creator.
+        biography	string	Filter by a keyword in creator biography.
+        nationality	string	Filter by a keyword in creator nationality, e.g. 'French'.
+        birth_year	integer	Filter by exact match on creator's birth year.
+        birth_year_after	integer	Filter by creators born after a certain year.
+        birth_year_before	integer	Filter by creators born before a certain year.
+        death_year	integer	Filter by exact match on creator's death year.
+        death_year_after	integer	Filter by creators who have died after a certain year.
+        death_year_before	integer	Filter by creators who have died before a certain year.
+        indent	integer	Number of spaces to indent JSON content if "pretty" formatting is desired.
+        skip	integer	Offset index for results.
+        limit	integer	Limit for number of results. If no limit provided, API will return the maximum (100) number of records.
+        '''
+        params = {}
+        if kwargs['name']:
+            params['name'] = str(kwargs['name'])
+        if kwargs['biography']:
+            params['biography'] = str(kwargs['biography'])
+        if kwargs['nationality']:
+            params['nationality'] = str(kwargs['nationality'])
+        if kwargs['birth_year']:
+            params['birth_year'] = int(kwargs['birth_year'])
+        if kwargs['birth_year_after']:
+            params['birth_year_after'] = int(kwargs['birth_year_after'])
+        if kwargs['birth_year_before']:
+            params['birth_year_before'] = int(kwargs['birth_year_before'])
+        if kwargs['death_year']:
+            params['death_year'] = int(kwargs['death_year'])
+        if kwargs['death_year_after']:
+            params['death_year_after'] = int(kwargs['death_year_after'])
+        if kwargs['death_year_before']:
+            params['death_year_before'] = int(kwargs['death_year_before'])
+        if kwargs['indent']:
+            params['indent'] = int(kwargs['indent'])
+        if kwargs['skip']:
+            params['skip'] = int(kwargs['skip'])
+        if kwargs['limit']:
+            params['limit'] = int(kwargs['limit'])
+        return self._api('GET', '/creators/?', params=params)
 
+    def get_creator(self, rid):
+        rid = int(rid)
+        return self._api('GET', '/creators/' + str(rid), None)
+
+    def list_exhibitions(self, **kwargs):
+        '''
+        title	string	Filter by matches or partial matches to the title of an exhibition.
+        organizer	string	Filter by exhibition organizer.
+        opened_after	date	Filter exhibitions opened after a certain data. (date in YYYY-MM-DD format, e.g. 1974-01-01)
+        opened_before	date	Filter exhibitions opened before a certain data. (date in YYYY-MM-DD format, e.g. 1974-01-01)
+        closed_after	date	Filter exhibitions closed after a certain data. (date in YYYY-MM-DD format, e.g. 1974-01-01)
+        closed_before	date	Filter exhibitions closed before a certain data. (date in YYYY-MM-DD format, e.g. 1974-01-01)
+        venue	string	Filter by exhibitioned opened in certain venues.
+        indent	integer	Number of spaces to indent JSON content if "pretty" formatting is desired.
+        skip	integer	Offset index for results.
+        limit	integer	Limit for number of results. If no limit provided, API will return the maximum (100) number of records.
+        '''
+        class d(str): # yyyy-mm-dd date string
+            def __new__(cls, s):
+                if re.match(r"\d{4}\-\d{2}\-\d{2}", s):
+                    return str.__new__(cls, s)
+                else:
+                    raise Exception('yyyy-mm-dd required, %s' % s)
+        params = {}
+        if kwargs['title']:
+            params['title'] = str(kwargs['title'])
+        if kwargs['organizer']:
+            params['organizer'] = str(kwargs['organizer'])
+        if kwargs['opened_after']:
+            params['opened_after'] = d(kwargs['opened_after'])
+        if kwargs['opened_before']:
+            params['opened_before'] = d(kwargs['opened_before'])
+        if kwargs['closed_after']:
+            params['closed_after'] = d(kwargs['closed_after'])
+        if kwargs['closed_before']:
+            params['closed_before'] = d(kwargs['closed_before'])
+        if kwargs['venue']:
+            params['venue'] = str(kwargs['venue'])
+        if kwargs['indent']:
+            params['indent'] = int(kwargs['indent'])
+        if kwargs['skip']:
+            params['skip'] = int(kwargs['skip'])
+        if kwargs['limit']:
+            params['limit'] = int(kwargs['limit'])
+        return self._api('GET', '/exhibitions/?', params=params)
+
+    def get_exhibition(self, rid):
+        rid = int(rid)
+        return self._api('GET', '/exhibitions/' + str(rid), None)
