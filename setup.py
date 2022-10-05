@@ -1,8 +1,6 @@
 import setuptools
 from sys import path
 
-# Test
-
 with open('requirements.txt') as f:
 	requirements = f.readlines()
 
