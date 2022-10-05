@@ -1,6 +1,8 @@
 import setuptools
 from sys import path
 
+# CodeQL
+
 with open('requirements.txt') as f:
 	requirements = f.readlines()
 
@@ -26,4 +28,3 @@ setuptools.setup(
 		'Operating System :: OS Independent'
 	]
 )
-
