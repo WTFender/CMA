@@ -1,7 +1,7 @@
 import setuptools
 from sys import path
 
-# CodeQL
+# Test
 
 with open('requirements.txt') as f:
 	requirements = f.readlines()
